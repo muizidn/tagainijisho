@@ -85,7 +85,7 @@ QString Kanjidic2EntryFormatter::getQueryUsedInWordsSql(int kanji, int limit, bo
 		"join jmdict.kanjiChar on jmdict.kanjiChar.id = jmdict.entries.id "
 		"join jmdict.senses as senses on senses.id = jmdict.entries.id "
 			"and senses.priority = 0 "
-			"and senses.misc & %4 = 0 "
+			"and senses.misc0 & %4 = 0 "
 		"%3join training on training.id = jmdict.entries.id and training.type = " QUOTEMACRO(JMDICTENTRY_GLOBALID) " "
 		"left join jmdict.jlpt on jmdict.entries.id = jmdict.jlpt.id "
 		"where jmdict.kanjiChar.kanji = %1 and jmdict.kanjiChar.priority = 0 "

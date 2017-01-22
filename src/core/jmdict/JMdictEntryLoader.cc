@@ -32,7 +32,7 @@ JMdictEntryLoader::JMdictEntryLoader() : EntryLoader(), kanjiQuery(&connection),
 	// Prepare queries so that we just have to bind and execute them
 	kanjiQuery.prepare("select reading, frequency from jmdict.kanji join jmdict.kanjiText on kanji.docid == kanjiText.docid where id=? order by priority");
 	kanaQuery.prepare("select reading, nokanji, frequency, restrictedTo from jmdict.kana join jmdict.kanaText on kana.docid == kanaText.docid where id=? order by priority");
-	sensesQuery.prepare("select pos, misc, dial, field, restrictedToKanji, restrictedToKana from jmdict.senses where id=? order by priority asc");
+	sensesQuery.prepare("select pos0, misc0, dial0, field0, restrictedToKanji, restrictedToKana from jmdict.senses where id=? order by priority asc");
 	jlptQuery.prepare("select jlpt.level from jmdict.jlpt where jlpt.id=?");
 	
 	foreach (const QString &lang, allDBs.keys()) {

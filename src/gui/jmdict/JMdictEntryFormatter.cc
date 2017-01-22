@@ -65,8 +65,8 @@ QString JMdictEntryFormatter::getVerbBuddySql(const QString &matchPattern, quint
 			"(select docid from jmdict.kanjiText "
 			"where jmdict.kanjiText.reading match '\"%1*\"') "
 		"and jmdict.kanji.priority = 0 "
-		"and jmdict.senses.pos & %2 == %2 "
-		"and jmdict.senses.misc & %4 == 0 "
+		"and jmdict.senses.pos0 & %2 == %2 "
+		"and jmdict.senses.misc0 & %4 == 0 "
 		"and jmdict.entries.id != %3");
 
 	return	queryFindVerbBuddySql.arg(matchPattern).arg(pos).arg(id).arg(JMdictEntrySearcher::miscFilterMask());
@@ -83,7 +83,7 @@ QString JMdictEntryFormatter::getHomophonesSql(const QString &reading, int id, i
 			"(select docid from jmdict.kanaText "
 			"where jmdict.kanaText.reading match '\"%1\"') "
 		"and jmdict.kana.priority = 0 "
-		"and jmdict.senses.misc & %5 == 0 "
+		"and jmdict.senses.misc0 & %5 == 0 "
 		"and jmdict.entries.id != %3 "
 		"order by training.dateAdded is null ASC, training.score ASC, jmdict.jlpt.level DESC, jmdict.entries.frequency DESC "
 		"limit %2");
@@ -102,7 +102,7 @@ QString JMdictEntryFormatter::getHomographsSql(const QString &writing, int id, i
 			"(select docid from jmdict.kanjiText "
 			"where jmdict.kanjiText.reading match '\"%1\"') "
 		"and jmdict.kanji.priority = 0 "
-		"and jmdict.senses.misc & %5 == 0 "
+		"and jmdict.senses.misc0 & %5 == 0 "
 		"and jmdict.entries.id != %3 "
 		"order by training.dateAdded is null ASC, training.score ASC, jmdict.jlpt.level DESC, jmdict.entries.frequency DESC "
 		"limit %2");

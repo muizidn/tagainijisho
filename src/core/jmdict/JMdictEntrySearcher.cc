@@ -334,12 +334,12 @@ void JMdictEntrySearcher::buildStatement(QList<SearchCommand> &commands, QueryBu
 	bool mustJoinSenses = _miscFilterMask | posFilter | miscFilter | dialectFilter | fieldFilter;
 	if (mustJoinSenses) {
 		statement.addJoin(QueryBuilder::Join(QueryBuilder::Column("jmdict.senses", "id")));
-		if (posFilter) statement.addWhere(QString("jmdict.senses.pos & %2 == %2").arg(posFilter));
-		if (miscFilter) statement.addWhere(QString("jmdict.senses.misc & %2 == %2").arg(miscFilter));
-		if (dialectFilter) statement.addWhere(QString("jmdict.senses.dial & %2 == %2").arg(dialectFilter));
-		if (fieldFilter) statement.addWhere(QString("jmdict.senses.field & %2 == %2").arg(fieldFilter));
+		if (posFilter) statement.addWhere(QString("jmdict.senses.pos0 & %2 == %2").arg(posFilter));
+		if (miscFilter) statement.addWhere(QString("jmdict.senses.misc0 & %2 == %2").arg(miscFilter));
+		if (dialectFilter) statement.addWhere(QString("jmdict.senses.dial0 & %2 == %2").arg(dialectFilter));
+		if (fieldFilter) statement.addWhere(QString("jmdict.senses.field0 & %2 == %2").arg(fieldFilter));
 		// Implicitely masked misc properties
-		if (_miscFilterMask) statement.addWhere(QString("jmdict.senses.misc & %1 == 0").arg(_miscFilterMask));
+		if (_miscFilterMask) statement.addWhere(QString("jmdict.senses.misc0 & %1 == 0").arg(_miscFilterMask));
 	}
 
 	// TODO it should be ensure that kanjisearch and componentsearch are applied on the same writing
