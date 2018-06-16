@@ -37,16 +37,16 @@ private:
 	JMdictEntrySearcher *searcher;
 	JMdictEntryLoader *loader;
 
-	// Associates entities shift with their short and long descriptions
-	static QVector<QPair<QString, QString> > _posEntities;
-	static QVector<QPair<QString, QString> > _miscEntities;
-	static QVector<QPair<QString, QString> > _dialectEntities;
-	static QVector<QPair<QString, QString> > _fieldEntities;
-	// Associates entities name with their bit shift
-	static QMap<QString, quint8> _posBitShift;
-	static QMap<QString, quint8> _miscBitShift;
-	static QMap<QString, quint8> _dialectBitShift;
-	static QMap<QString, quint8> _fieldBitShift;
+	static QMap<QString, QPair<QString, quint8>> _posMap;
+	static QVector<QString> _posShift;
+	static QMap<QString, QPair<QString, quint8>> _miscMap;
+	static QVector<QString> _miscShift;
+	static QMap<QString, QPair<QString, quint8>> _dialMap;
+	static QVector<QString> _dialShift;
+	static QMap<QString, QPair<QString, quint8>> _fieldMap;
+	static QVector<QString> _fieldShift;
+
+	static void queryEntities(SQLite::Query *query, const QString &entity, QMap<QString, QPair<QString, quint8>> *map, QVector<QString> *shift);
 
 	/**
 	 * If the version if the JMdict database has been updated, this
@@ -69,20 +69,15 @@ public:
 	virtual QString pluginInfo() const;
 	const QMap<QString, QString> &attachedDBs() const { return _attachedDBs; }
 	
-	static QList<const QPair<QString, QString> *> posEntitiesList(quint64 mask);
-	static QList<const QPair<QString, QString> *> miscEntitiesList(quint64 mask);
-	static QList<const QPair<QString, QString> *> dialectEntitiesList(quint64 mask);
-	static QList<const QPair<QString, QString> *> fieldEntitiesList(quint64 mask);
-	
-	static const QVector<QPair<QString, QString> > &posEntities() { return _posEntities; }
-	static const QVector<QPair<QString, QString> > &miscEntities() { return _miscEntities; }
-	static const QVector<QPair<QString, QString> > &dialectEntities() { return _dialectEntities; }
-	static const QVector<QPair<QString, QString> > &fieldEntities() { return _fieldEntities; }
-	
-	static const QMap<QString, quint8> &posBitShifts() { return _posBitShift; }
-	static const QMap<QString, quint8> &miscBitShifts() { return _miscBitShift; }
-	static const QMap<QString, quint8> &dialectBitShifts() { return _dialectBitShift; }
-	static const QMap<QString, quint8> &fieldBitShifts() { return _fieldBitShift; }
+	// Maps the short string to long description and bitshift
+	static const QMap<QString, QPair<QString, quint8>> &posMap() { return _posMap; }
+	static const QVector<QString> &posShift() { return _posShift; }
+	static const QMap<QString, QPair<QString, quint8>> &miscMap() { return _miscMap; }
+	static const QVector<QString> &miscShift() { return _miscShift; }
+	static const QMap<QString, QPair<QString, quint8>> &dialMap() { return _dialMap; }
+	static const QVector<QString> &dialShift() { return _dialShift; }
+	static const QMap<QString, QPair<QString, quint8>> &fieldMap() { return _fieldMap; }
+	static const QVector<QString> &fieldShift() { return _fieldShift; }
 };
 
 #endif

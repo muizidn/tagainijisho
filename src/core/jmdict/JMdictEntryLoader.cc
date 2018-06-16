@@ -88,6 +88,8 @@ Entry *JMdictEntryLoader::loadEntry(EntryId id)
 	sensesQuery.exec();
 	const QMap<QString, QString> allDBs = JMdictPlugin::instance()->attachedDBs();
 	while(sensesQuery.next()) {
+		quint64 pos = sensesQuery.valueUInt64(0);
+
 		Sense sense(sensesQuery.valueUInt64(0), sensesQuery.valueUInt64(1), sensesQuery.valueUInt64(2), sensesQuery.valueUInt64(3));
 		// Get restricted readings/writing
 		QStringList restrictedTo(sensesQuery.valueString(4).split(',', QString::SkipEmptyParts));

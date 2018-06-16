@@ -109,16 +109,16 @@ void JMdictLinkHandler::handleUrl(const QUrl &url, DetailedView *view)
 {
 	QString translated;
 	if (url.authority() == "pos") {
-		translated = QCoreApplication::translate("JMdictLongDescs", JMdictPlugin::posEntities()[url.fragment().toInt()].second.toLatin1());
+		translated = QCoreApplication::translate("JMdictLongDescs", JMdictPlugin::posMap()[url.fragment()].first.toLatin1());
 	}
 	else if (url.authority() == "misc") {
-		translated = QCoreApplication::translate("JMdictLongDescs", JMdictPlugin::miscEntities()[url.fragment().toInt()].second.toLatin1());
+		translated = QCoreApplication::translate("JMdictLongDescs", JMdictPlugin::miscMap()[url.fragment()].first.toLatin1());
 	}
 	else if (url.authority() == "dialect") {
-		translated = QCoreApplication::translate("JMdictLongDescs", JMdictPlugin::dialectEntities()[url.fragment().toInt()].second.toLatin1());
+		translated = QCoreApplication::translate("JMdictLongDescs", JMdictPlugin::dialMap()[url.fragment()].first.toLatin1());
 	}
 	else if (url.authority() == "field") {
-		translated = QCoreApplication::translate("JMdictLongDescs", JMdictPlugin::fieldEntities()[url.fragment().toInt()].second.toLatin1());
+		translated = QCoreApplication::translate("JMdictLongDescs", JMdictPlugin::fieldMap()[url.fragment()].first.toLatin1());
 	}
 	else return;
 	QToolTip::showText(QCursor::pos(), translated.replace(0, 1, translated[0].toUpper()), 0, QRect());
@@ -131,29 +131,32 @@ void JMdictFilterWidget::updateMiscFilteredProperties()
 	QFont italicFont;
 	italicFont.setItalic(true);
 	foreach (QAction *action, _miscButton->menu()->actions()) {
-		if (filtered.contains(JMdictPlugin::miscEntities()[action->property("TJpropertyIndex").toInt()].first))
+		if (filtered.contains(action->property("TJpropertyIndex").toString()))
 			action->setFont(italicFont);
 		else action->setFont(normalFont);
 	}
 }
 
-QActionGroup *JMdictFilterWidget::addCheckableProperties(const QVector<QPair<QString, QString> >&defs, QMenu *menu)
+QActionGroup *JMdictFilterWidget::addCheckableProperties(const QMap<QString, QPair<QString, quint8> >&map, QMenu *menu)
 {
-	QList<QString> strList;
-	for (int i = 0; i < defs.size(); i++) {
-		QString translated = QCoreApplication::translate("JMdictLongDescs", defs[i].second.toLatin1());
-		strList << QString(translated.replace(0, 1, translated[0].toUpper()));
+	QMap<QString, QString> strMap;
+	QStringList strList;
+	for (const auto &tag : map.keys()) {
+		QString translated = QCoreApplication::translate("JMdictLongDescs", map[tag].first.toLatin1());
+		translated = translated.replace(0, 1, translated[0].toUpper());
+		strList << translated;
+		strMap[translated] = tag;
 	}
-	QStringList sortedList(strList);
-	qSort(sortedList.begin(), sortedList.end());
+
+	qSort(strList.begin(), strList.end());
 	QActionGroup *actionGroup = new QActionGroup(menu);
 	actionGroup->setExclusive(false);
-	foreach(QString str, sortedList) {
-		int idx = strList.indexOf(str);
+	foreach(QString str, strList) {
+		QString tag = strMap[str];
 		QAction *action = actionGroup->addAction(str);
 		action->setCheckable(true);
 		menu->addAction(action);
-		action->setProperty("TJpropertyIndex", idx);
+		action->setProperty("TJpropertyIndex", tag);
 	}
 	return actionGroup;
 }
