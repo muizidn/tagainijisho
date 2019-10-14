@@ -107,8 +107,8 @@ void JMdictPreferences::refresh()
 	filteredDefs->clear();
 	displayedDefs->clear();
 	const QStringList &filtered(JMdictEntrySearcher::miscPropertiesFilter.value().split(','));
-	for (int i = 0; i < JMdictPlugin::miscEntities().size(); i++) {
-		QPair<QString, QString> entity(JMdictPlugin::miscEntities()[i]);
+	for (int i = 0; i < JMdictPlugin::miscShift().size(); i++) {
+		QPair<QString, QString> entity(JMdictPlugin::miscMap()[JMdictPlugin::miscShift()[i]]);
 		QString s(QCoreApplication::translate("JMdictLongDescs", entity.second.toLatin1()));
 		s[0] = s[0].toUpper();
 		QListWidgetItem *item = new QListWidgetItem(s);
@@ -144,8 +144,8 @@ void JMdictPreferences::applySettings()
 	QStringList filtered, res;
 	for (int i = 0; i < filteredDefs->model()->rowCount(); i++)
 		filtered << filteredDefs->item(i)->data(Qt::UserRole).toString();
-	for (int i = 0; i < JMdictPlugin::miscEntities().size(); i++) {
-		QPair<QString, QString> entity(JMdictPlugin::miscEntities()[i]);
+	for (int i = 0; i < JMdictPlugin::miscShift().size(); i++) {
+		QPair<QString, QString> entity(JMdictPlugin::miscMap()[JMdictPlugin::miscShift()[i]]);
 		QString s(entity.first);
 		if (filtered.contains(s))
 			res << entity.first;

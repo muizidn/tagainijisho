@@ -263,7 +263,7 @@ bool JMdictPlugin::attachAllDatabases()
 	}
 
 	_attachedDBs[""] = dbFile;
-	
+
 	// Then look for language databases
 	foreach (const QString &lang, Lang::preferredDictLanguages()) {
 		dbFile = lookForFile(QString("jmdict-%1.db").arg(lang));
@@ -275,7 +275,7 @@ bool JMdictPlugin::attachAllDatabases()
 		qFatal("JMdict plugin fatal error: no language database present!");
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -299,6 +299,7 @@ void JMdictPlugin::queryEntities(SQLite::Query *query, const QString &entity, QM
 		QString name(query->valueString(1));
 		QString desc(query->valueString(2));
 		(*map)[name] = QPair<QString, quint8>(desc, bitShift);
+		Q_ASSERT(shift->size() == bitShift);
 		shift->append(name);
 	}
 }
@@ -314,7 +315,7 @@ bool JMdictPlugin::onRegister()
 	query.exec("select JMdictVersion from jmdict.info");
 	if (query.next()) _dictVersion = query.valueString(0);
 	query.clear();
-	
+
 	if (!checkForMovedEntries()) {
 		qCritical("%s", QCoreApplication::translate("JMdictPlugin", "An error seems to have occured while updating the JMdict database records - the program might crash during usage. Please report this bug.").toUtf8().constData());
 	}
@@ -333,7 +334,7 @@ bool JMdictPlugin::onRegister()
 	loader = new JMdictEntryLoader();
 	if (!EntriesCache::instance().addLoader(JMDICTENTRY_GLOBALID, loader)) return false;
 
-	return true;	
+	return true;
 }
 
 bool JMdictPlugin::onUnregister()
@@ -355,9 +356,21 @@ bool JMdictPlugin::onUnregister()
 	_dialShift.clear();
 	_fieldMap.clear();
 	_fieldShift.clear();
-	
+
 	// Detach our databases
 	detachAllDatabases();
 
 	return true;
+}
+
+QSet<QString> JMdictPlugin::shiftsToSet(const QVector<QString>& shift, quint64 bits) {
+	QSet<QString> ret;
+	int cpt = 0;
+
+	while (bits != 0) {
+		if (bits & 1)
+			ret << shift[cpt];
+		bits >>= 1;
+		cpt++;
+	}
 }

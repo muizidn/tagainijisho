@@ -39,7 +39,9 @@ protected slots:
 	void updateMiscFilterMask();
 
 public:
-	static QSet<QString> miscFilterMask() { return _miscFilterMask; }
+	static QSet<QString> miscFilterEntities() { return _miscFilterMask; }
+	static QVector<quint64> miscFilterMask();
+
 	static QSet<QString> explicitlyRequestedMiscs() { return _explicitlyRequestedMiscs; }
 
 	JMdictEntrySearcher();

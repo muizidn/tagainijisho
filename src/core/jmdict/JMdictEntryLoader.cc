@@ -34,7 +34,7 @@ JMdictEntryLoader::JMdictEntryLoader() : EntryLoader(), kanjiQuery(&connection),
 	kanaQuery.prepare("select reading, nokanji, frequency, restrictedTo from jmdict.kana join jmdict.kanaText on kana.docid == kanaText.docid where id=? order by priority");
 	sensesQuery.prepare("select pos0, misc0, dial0, field0, restrictedToKanji, restrictedToKana from jmdict.senses where id=? order by priority asc");
 	jlptQuery.prepare("select jlpt.level from jmdict.jlpt where jlpt.id=?");
-	
+
 	foreach (const QString &lang, allDBs.keys()) {
 		if (lang.isEmpty()) continue;
 		SQLite::Query &query = glossQueries[lang];
@@ -88,9 +88,12 @@ Entry *JMdictEntryLoader::loadEntry(EntryId id)
 	sensesQuery.exec();
 	const QMap<QString, QString> allDBs = JMdictPlugin::instance()->attachedDBs();
 	while(sensesQuery.next()) {
-		quint64 pos = sensesQuery.valueUInt64(0);
+		QSet<QString> posStr = JMdictPlugin::shiftsToSet(JMdictPlugin::posShift(), sensesQuery.valueUInt64(0));
+		QSet<QString> miscStr = JMdictPlugin::shiftsToSet(JMdictPlugin::miscShift(), sensesQuery.valueUInt64(1));
+		QSet<QString> dialStr = JMdictPlugin::shiftsToSet(JMdictPlugin::dialShift(), sensesQuery.valueUInt64(2));
+		QSet<QString> fieldStr = JMdictPlugin::shiftsToSet(JMdictPlugin::fieldShift(), sensesQuery.valueUInt64(3));
 
-		Sense sense(sensesQuery.valueUInt64(0), sensesQuery.valueUInt64(1), sensesQuery.valueUInt64(2), sensesQuery.valueUInt64(3));
+		Sense sense(posStr, miscStr, dialStr, fieldStr);
 		// Get restricted readings/writing
 		QStringList restrictedTo(sensesQuery.valueString(4).split(',', QString::SkipEmptyParts));
 		foreach (const QString &idx, restrictedTo) sense.addStagK(idx.toInt());

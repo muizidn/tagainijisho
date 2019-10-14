@@ -137,30 +137,6 @@ void JMdictFilterWidget::updateMiscFilteredProperties()
 	}
 }
 
-QActionGroup *JMdictFilterWidget::addCheckableProperties(const QMap<QString, QPair<QString, quint8> >&map, QMenu *menu)
-{
-	QMap<QString, QString> strMap;
-	QStringList strList;
-	for (const auto &tag : map.keys()) {
-		QString translated = QCoreApplication::translate("JMdictLongDescs", map[tag].first.toLatin1());
-		translated = translated.replace(0, 1, translated[0].toUpper());
-		strList << translated;
-		strMap[translated] = tag;
-	}
-
-	qSort(strList.begin(), strList.end());
-	QActionGroup *actionGroup = new QActionGroup(menu);
-	actionGroup->setExclusive(false);
-	foreach(QString str, strList) {
-		QString tag = strMap[str];
-		QAction *action = actionGroup->addAction(str);
-		action->setCheckable(true);
-		menu->addAction(action);
-		action->setProperty("TJpropertyIndex", tag);
-	}
-	return actionGroup;
-}
-
 void JMdictGUIPlugin::training(YesNoTrainer::TrainingMode mode, const QString &queryString)
 {
 	bool restart = false;

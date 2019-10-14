@@ -336,8 +336,8 @@ void JMdictEntrySearcher::buildStatement(QList<SearchCommand> &commands, QueryBu
 
 	// Add where statements for sense filters
 	// Cancel misc filters that have explicitly been required
-	quint64 filteredMisc;
-	for (const auto &misc : miscFilterMask() - _explicitlyRequestedMiscs) {
+	quint64 filteredMisc = 0;
+	for (const auto &misc : miscFilterEntities() - _explicitlyRequestedMiscs) {
 		auto it = JMdictPlugin::miscMap().find(misc);
 		if (it != JMdictPlugin::miscMap().end())
 			filteredMisc |= 1ULL << it->second;
@@ -417,4 +417,16 @@ QueryBuilder::Column JMdictEntrySearcher::canSort(const QString &sort, const Que
 	else if (sort == "freq") return QueryBuilder::Column("jmdict.entries", "frequency");
 	else if (sort == "jlpt") return QueryBuilder::Column("jmdict.jlpt", "level");
 	return res;
+}
+
+QVector<quint64> JMdictEntrySearcher::miscFilterMask() {
+	QVector<quint64> ret;
+
+	quint64 miscMask = 0;
+	for (const QString &misc : JMdictEntrySearcher::miscFilterEntities()) {
+		miscMask |= (1 << JMdictPlugin::miscMap()[misc].second);
+	}
+
+	ret.append(miscMask);
+	return ret;
 }

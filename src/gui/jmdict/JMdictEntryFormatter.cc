@@ -18,6 +18,7 @@
 #include "core/Paths.h"
 #include "core/Lang.h"
 #include "core/TextTools.h"
+#include "core/jmdict/JMdictEntry.h"
 #include "core/jmdict/JMdictPlugin.h"
 #include "core/jmdict/JMdictEntrySearcher.h"
 #include "gui/jmdict/JMdictEntryFormatter.h"
@@ -30,6 +31,7 @@
 #include <QTextBlock>
 #include <QTextList>
 #include <QPair>
+#include <qglobal.h>
 
 static QString tatoebaTemplate("http://tatoeba.org/eng/sentences/search?query=%1&from=jpn&to=eng");
 static QString jishoTemplate("http://jisho.org/sentences?jap=%1&eng=");
@@ -69,7 +71,10 @@ QString JMdictEntryFormatter::getVerbBuddySql(const QString &matchPattern, quint
 		"and jmdict.senses.misc0 & %4 == 0 "
 		"and jmdict.entries.id != %3");
 
-	return	queryFindVerbBuddySql.arg(matchPattern).arg(pos).arg(id).arg(JMdictEntrySearcher::miscFilterMask());
+        return queryFindVerbBuddySql.arg(matchPattern)
+            .arg(pos)
+            .arg(id)
+            .arg(JMdictEntrySearcher::miscFilterMask()[0]);
 }
 
 QString JMdictEntryFormatter::getHomophonesSql(const QString &reading, int id, int maxToDisplay, bool studiedOnly)
@@ -88,7 +93,11 @@ QString JMdictEntryFormatter::getHomophonesSql(const QString &reading, int id, i
 		"order by training.dateAdded is null ASC, training.score ASC, jmdict.jlpt.level DESC, jmdict.entries.frequency DESC "
 		"limit %2");
 
-	return queryFindHomophonesSql.arg(reading).arg(maxToDisplay).arg(id).arg(studiedOnly ? "" : "left ").arg(JMdictEntrySearcher::miscFilterMask());
+        return queryFindHomophonesSql.arg(reading)
+            .arg(maxToDisplay)
+            .arg(id)
+            .arg(studiedOnly ? "" : "left ")
+            .arg(JMdictEntrySearcher::miscFilterMask()[0]);
 }
 
 QString JMdictEntryFormatter::getHomographsSql(const QString &writing, int id, int maxToDisplay, bool studiedOnly)
@@ -107,7 +116,11 @@ QString JMdictEntryFormatter::getHomographsSql(const QString &writing, int id, i
 		"order by training.dateAdded is null ASC, training.score ASC, jmdict.jlpt.level DESC, jmdict.entries.frequency DESC "
 		"limit %2");
 
-	return queryFindHomographsSql.arg(writing).arg(maxToDisplay).arg(id).arg(studiedOnly ? "" : "left ").arg(JMdictEntrySearcher::miscFilterMask());
+        return queryFindHomographsSql.arg(writing)
+            .arg(maxToDisplay)
+            .arg(id)
+            .arg(studiedOnly ? "" : "left ")
+            .arg(JMdictEntrySearcher::miscFilterMask()[0]);
 }
 
 JMdictEntryFormatter::JMdictEntryFormatter(QObject* parent) : EntryFormatter("detailed_jmdict.css", "detailed_jmdict.html", parent)
@@ -443,7 +456,7 @@ QList<DetailedViewJob *> JMdictEntryFormatter::jobVerbBuddy(const ConstEntryPoin
 	QTextCharFormat bold(normal);
 	bold.setFontWeight(QFont::Bold);
 	bool searchVi = true, searchVt = true;
-	
+
 	foreach (const Sense *sense, senses) {
 		if (sense->partOfSpeech().contains("vi") && searchVt) {
 			ret << new FindVerbBuddyJob(entry, "vt", cursor);
@@ -479,7 +492,7 @@ FindVerbBuddyJob::FindVerbBuddyJob(const ConstJMdictEntryPointer& verb, const QS
 {
 	// Check that the pos we are looking for actually exists
 	quint64 posMask(1 << JMdictPlugin::posMap()[pos].second);
-		
+
 	// No writing or no reading, no way to compare
 	if (verb->writings().isEmpty() || verb->readings().isEmpty()) return;
 	matchPattern = verb->writings()[0];
@@ -495,7 +508,7 @@ FindVerbBuddyJob::FindVerbBuddyJob(const ConstJMdictEntryPointer& verb, const QS
 	// Only continue if the matchpattern is not empty...
 	if (!matchPattern.size() || !kanaPattern.size()) return;
 
-		
+
 	_sql = JMdictEntryFormatter::getVerbBuddySql(matchPattern, posMask, verb->id());
 	lastKanjiPos = matchPattern.size();
 }

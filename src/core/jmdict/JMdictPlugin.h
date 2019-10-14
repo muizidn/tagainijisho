@@ -68,7 +68,7 @@ public:
 	const QString &dictVersion() const { return _dictVersion; }
 	virtual QString pluginInfo() const;
 	const QMap<QString, QString> &attachedDBs() const { return _attachedDBs; }
-	
+
 	// Maps the short string to long description and bitshift
 	static const QMap<QString, QPair<QString, quint8>> &posMap() { return _posMap; }
 	static const QVector<QString> &posShift() { return _posShift; }
@@ -78,6 +78,8 @@ public:
 	static const QVector<QString> &dialShift() { return _dialShift; }
 	static const QMap<QString, QPair<QString, quint8>> &fieldMap() { return _fieldMap; }
 	static const QVector<QString> &fieldShift() { return _fieldShift; }
+
+	static QSet<QString> shiftsToSet(const QVector<QString>& shift, quint64 bits);
 };
 
 #endif
