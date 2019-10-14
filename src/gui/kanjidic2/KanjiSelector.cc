@@ -49,11 +49,12 @@ void ComplementsList::setupGridSize()
 	int maxFontSize = qMax(fm.maxWidth(), fm.height()) + 2;
 	int maxBoldSize = 0;
 	for (int i = 0; i < 10; i++) {
-		int w = lfm.width(QString::number(i));
+		int w = lfm.horizontalAdvance(QString::number(i));
 		if (w > maxBoldSize) maxBoldSize = w;
 	}
-	maxBoldSize += qMax(lfm.width("0"), lfm.width("1"));
-	int gridSize = qMax(maxBoldSize, maxFontSize) + 5;
+        maxBoldSize +=
+            qMax(lfm.horizontalAdvance("0"), lfm.horizontalAdvance("1"));
+        int gridSize = qMax(maxBoldSize, maxFontSize) + 5;
 	setGridSize(QSize(gridSize, gridSize));
 }
 
@@ -278,13 +279,13 @@ QValidator::State KanjiSelectorValidator::validate(QString &input, int &pos) con
 
 	return QValidator::Acceptable;
 }
-	
+
 QString RadicalKanjiSelector::getCandidatesQuery(const QSet<uint> &selection) const
 {
 	if (selection.isEmpty()) return "";
 	QStringList select;
 	foreach (uint sel, selection) select << QString::number(sel);
-	
+
 	return QString("select r1.kanji from kanjidic2.radicals as r1 join kanjidic2.entries as e on r1.kanji = e.id where r1.number in (%1) and r1.type is not null group by r1.kanji having uniquecount(r1.number) >= %2 order by e.strokeCount, e.frequency, e.id").arg(select.join(", ")).arg(select.size());
 }
 
@@ -334,7 +335,7 @@ QString ComponentKanjiSelector::getCandidatesQuery(const QSet<uint> &selection) 
 	if (selection.isEmpty()) return "";
 	QStringList select;
 	foreach (uint sel, selection) select << QString::number(sel);
-	
+
 	return QString("select ks1.kanji from kanjidic2.strokeGroups as ks1 left join kanjidic2.entries as e on ks1.kanji = e.id where (ks1.element in (%1) or ks1.original in (%1)) group by ks1.kanji having uniquecount(CASE WHEN ks1.element IN (%1) THEN ks1.element ELSE NULL END, CASE WHEN ks1.original IN (%1) THEN ks1.original ELSE NULL END) >= %2 order by strokeCount").arg(select.join(", ")).arg(select.size());
 }
 
