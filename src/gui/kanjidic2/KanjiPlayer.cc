@@ -46,7 +46,7 @@ KanjiPlayer::KanjiPlayer(QWidget *parent) : QWidget(parent), _timer(), _kanji(0)
 	setAnimationSpeed(animationSpeed.value());
 	setDelayBetweenStrokes(delayBetweenStrokes.value());
 	setAnimationLoopDelay(animationLoopDelay.value());
-	
+
 	_playAction = new QAction(QIcon(QPixmap(":/images/icons/control-play.png").scaledToHeight(CONTROL_ICON_SIZE, Qt::SmoothTransformation)), tr("Play"), this);
 	_playAction->setShortcut(QKeySequence("Space"));
 	connect(_playAction, SIGNAL(triggered()), this, SLOT(play()));
@@ -62,13 +62,13 @@ KanjiPlayer::KanjiPlayer(QWidget *parent) : QWidget(parent), _timer(), _kanji(0)
 	_prevStrokeAction = new QAction(QIcon(QPixmap(":/images/icons/control-fr.png").scaledToHeight(CONTROL_ICON_SIZE, Qt::SmoothTransformation)), tr("Previous stroke"), this);
 	_prevStrokeAction->setShortcut(QKeySequence("Left"));
 	connect(_prevStrokeAction, SIGNAL(triggered()), this, SLOT(prevStroke()));
-	
+
 	_playAction->setEnabled(false);
 	_pauseAction->setEnabled(false);
 	_gotoEndAction->setEnabled(false);
 	_prevStrokeAction->setEnabled(false);
 	_nextStrokeAction->setEnabled(false);
-	
+
 	kanjiView = new QLabel(this);
 	kanjiView->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 	kanjiView->setFocusPolicy(Qt::NoFocus);
@@ -88,7 +88,7 @@ KanjiPlayer::KanjiPlayer(QWidget *parent) : QWidget(parent), _timer(), _kanji(0)
 	QHBoxLayout *controlLayout = new QHBoxLayout();
 	controlLayout->setContentsMargins(0, 0, 0, 0);
 	controlLayout->setSpacing(0);
-	
+
 	playButton = new QToolButton(this);
 	playButton->setMaximumSize(20, 20);
 	playButton->setDefaultAction(playAction());
@@ -112,14 +112,15 @@ KanjiPlayer::KanjiPlayer(QWidget *parent) : QWidget(parent), _timer(), _kanji(0)
 	connect(resetButton, SIGNAL(clicked()), this, SLOT(gotoEnd()));
 	connect(prevButton, SIGNAL(clicked()), this, SLOT(prevStroke()));
 	connect(nextButton, SIGNAL(clicked()), this, SLOT(nextStroke()));*/
-	
+
 
 	QFontMetrics metrics(font);
 	strokeCountLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 	// Determine the largest size that our label can take.
 	int maxWidth(0);
-	for (char c = '0'; c <= '9';c++) maxWidth = qMax(metrics.width(c), maxWidth);
-	strokeCountLabel->setMinimumWidth(metrics.width("/") + maxWidth * 4 + 2);
+	for (char c = '0'; c <= '9';c++)
+          maxWidth = qMax(metrics.horizontalAdvance(c), maxWidth);
+        strokeCountLabel->setMinimumWidth(metrics.horizontalAdvance("/") + maxWidth * 4 + 2);
 
 	setPictureSize(100);
 	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -223,7 +224,7 @@ void KanjiPlayer::renderCurrentState()
 
 		renderer.renderGrid(&painter);
 	}
-	
+
 	// Render the outline
 	QPen outLinePen;
 	outLinePen.setColor(palette().color(QPalette::WindowText));
@@ -323,7 +324,7 @@ bool KanjiPlayer::eventFilter(QObject *obj, QEvent *event)
 		const QList<KanjiRenderer::Stroke> &strokes(renderer.strokes());
 		QPainterPathStroker stroker;
 		stroker.setWidth(20);
-		
+
 		const KanjiComponent *comp(0);
 		const QList<const KanjiComponent *> &kComponents(_kanji->rootComponents());
 		foreach (const KanjiRenderer::Stroke &stroke, strokes) {

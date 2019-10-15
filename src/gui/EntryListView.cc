@@ -93,12 +93,12 @@ void EntryListView::setSmoothScrolling(bool value)
 void EntryListView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
 	QTreeView::selectionChanged(selected, deselected);
-	
+
 	// Update the status of the right-click new list action
 	QModelIndexList selection(selected.indexes());
 	_rightClickNewListAction.setEnabled(selection.size() <= 1 && (selection.size() == 0 || !selection[0].data(Entry::EntryRole).isValid()));
 	_renameListAction.setEnabled(selection.size() == 1 && !selection[0].data(Entry::EntryRole).isValid());
-	
+
 	_deleteSelectionAction.setEnabled(!selected.isEmpty());
 	emit selectionHasChanged(selected, deselected);
 	if (selected.isEmpty()) return;

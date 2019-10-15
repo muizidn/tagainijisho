@@ -16,6 +16,7 @@
  */
 
 #include "core/Paths.h"
+#include <algorithm>
 #include <core/Database.h>
 #include "gui/EntriesViewHelper.h"
 #include "gui/EntryMenu.h"
@@ -42,7 +43,7 @@ EntriesViewHelper::EntriesViewHelper(QAbstractItemView* client, EntryDelegateLay
 {
 	client->installEventFilter(this);
 	client->viewport()->installEventFilter(this);
-	
+
 	// If no delegate layout has been specified, let's use our private one...
 	if (!delegateLayout) delegateLayout = new EntryDelegateLayout(this);
 	connect(delegateLayout, SIGNAL(layoutHasChanged()), this, SLOT(updateLayout()));
@@ -65,7 +66,7 @@ EntriesViewHelper::EntriesViewHelper(QAbstractItemView* client, EntryDelegateLay
 	connect(&_actionPrintBookletPreview, SIGNAL(triggered()), this, SLOT(printBookletPreview()));
 	connect(&_actionExportTab, SIGNAL(triggered()), this, SLOT(tabExport()));
 	connect(&_actionExportJs, SIGNAL(triggered()), this, SLOT(jsExport()));
-		
+
 	_entriesMenu.addAction(&_actionPrint);
 	_entriesMenu.addAction(&_actionPrintPreview);
 	_entriesMenu.addAction(&_actionPrintBooklet);
@@ -73,7 +74,7 @@ EntriesViewHelper::EntriesViewHelper(QAbstractItemView* client, EntryDelegateLay
 	_entriesMenu.addSeparator();
 	_entriesMenu.addAction(&_actionExportTab);
 	_entriesMenu.addAction(&_actionExportJs);
-	
+
 	// If the view is editable, the helper menu shall be enabled
 	if (!viewOnly) {
 		_contextMenu.addSeparator();
@@ -304,14 +305,14 @@ QModelIndexList EntriesViewHelper::getAllIndexes(const QModelIndexList& indexes)
 {
 	QSet<QModelIndex> alreadyIn;
 	QModelIndexList ret(getAllIndexes(indexes, alreadyIn));
-	qStableSort(ret.begin(), ret.end(), modelIndexLessThan);
+	std::stable_sort(ret.begin(), ret.end(), modelIndexLessThan);
 	return ret;
 }
 
 QModelIndexList EntriesViewHelper::getAllIndexes(const QModelIndexList& indexes, QSet<QModelIndex>& alreadyIn)
 {
 	QModelIndexList ret;
-	
+
 	foreach (const QModelIndex &idx, indexes) {
 		// Should never happen
 		if (!idx.isValid()) continue;
@@ -344,7 +345,7 @@ QModelIndexList EntriesViewHelper::getEntriesToProcess(bool limitToSelection)
 	QModelIndexList entries(getAllIndexes(selIndexes));
 	return entries;
 }
-	
+
 
 void EntriesViewHelper::print()
 {
@@ -440,15 +441,15 @@ void EntriesViewHelper::jsExport()
 		if (!entry) continue;
 		realEntries << entry;
 	}
-	
+
 	QFile tmplFile(lookForFile("export_template.html"));
 	if (!tmplFile.open(QIODevice::ReadOnly)) {
 		QMessageBox::warning(0, tr("Cannot open template file"), QString(tr("Unable to open template file!")).arg(exportFile));
 		return;
 	}
-	
+
 	QString tmpl(QString::fromUtf8(tmplFile.readAll()));
-	
+
 	int idx = 0;
 	QString data(QString("var entries = Array();\nfor (var i = 0; i < %1; i++) entries[i] = Array();\n").arg(realEntries.size()).toUtf8());
 	foreach (const ConstEntryPointer &entry, realEntries) {
@@ -467,7 +468,7 @@ void EntriesViewHelper::jsExport()
 		}
 		data += QString("entries[%1][0]=\"%2\";\nentries[%1][1]=\"%3\";\nentries[%1][2]=\"%4\";\n").arg(idx++).arg(mainRepr).arg(reading).arg(meaning);
 	}
-	
+
 	tmpl.replace("__DATA__", data);
 	outFile.write(tmpl.toUtf8());
 

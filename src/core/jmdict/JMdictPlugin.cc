@@ -373,4 +373,6 @@ QSet<QString> JMdictPlugin::shiftsToSet(const QVector<QString>& shift, quint64 b
 		bits >>= 1;
 		cpt++;
 	}
+
+	return ret;
 }
