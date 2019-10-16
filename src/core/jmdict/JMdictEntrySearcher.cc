@@ -130,7 +130,8 @@ void JMdictEntrySearcher::buildStatement(QList<SearchCommand> &commands, QueryBu
 	QStringList romajiSearch;
 	QStringList hasKanjiSearch;
 	QStringList hasComponentSearch;
-	quint64 posFilter(0), miscFilter(0), dialectFilter(0), fieldFilter(0);
+	quint64 miscFilter(0), dialectFilter(0), fieldFilter(0);
+	QSet<quint16> posFilter;
 
 	QSet<QString> allCommands;
 	// First build the global list of all commands
@@ -269,7 +270,7 @@ void JMdictEntrySearcher::buildStatement(QList<SearchCommand> &commands, QueryBu
 				// Check if the argument is defined
 				auto it = JMdictPlugin::posMap().find(arg);
 				if (it != JMdictPlugin::posMap().end())
-					posFilter |= 1ULL << it->second;
+					posFilter << it->second;
 				else
 					allArgsProcessed = false;
 			}
@@ -343,10 +344,19 @@ void JMdictEntrySearcher::buildStatement(QList<SearchCommand> &commands, QueryBu
 			filteredMisc |= 1ULL << it->second;
 	}
 
-	bool mustJoinSenses = filteredMisc | posFilter | miscFilter | dialectFilter | fieldFilter;
+	bool mustJoinSenses = filteredMisc | !posFilter.isEmpty() | miscFilter | dialectFilter | fieldFilter;
 	if (mustJoinSenses) {
 		statement.addJoin(QueryBuilder::Join(QueryBuilder::Column("jmdict.senses", "id")));
-		if (posFilter) statement.addWhere(QString("jmdict.senses.pos0 & %2 == %2").arg(posFilter));
+		if (!posFilter.isEmpty()) {
+			std::vector<quint64> masks;
+			masks.resize((JMdictPlugin::posMap().size() + 63) / 64);
+			for (auto shift : posFilter)
+				masks[shift / 64] |= 1ULL << (shift % 64);
+			qDebug() << JMdictPlugin::posMap().size() << masks;
+			for (unsigned long i = 0; i < masks.size(); i++)
+				statement.addWhere(QString("jmdict.senses.pos%1 & %2 == %2").arg(i).arg(masks[i]));
+		}
+
 		if (miscFilter) statement.addWhere(QString("jmdict.senses.misc0 & %2 == %2").arg(miscFilter));
 		if (dialectFilter) statement.addWhere(QString("jmdict.senses.dial0 & %2 == %2").arg(dialectFilter));
 		if (fieldFilter) statement.addWhere(QString("jmdict.senses.field0 & %2 == %2").arg(fieldFilter));
