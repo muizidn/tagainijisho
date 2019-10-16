@@ -163,64 +163,39 @@ QString JMdictFilterWidget::currentTitle() const
 	return ret;
 }
 
-void JMdictFilterWidget::onPosTriggered(QAction *action)
+void JMdictFilterWidget::__onPropertyTriggered(QAction *action, QStringList &list, QPushButton *button)
 {
 	QString tag = action->property("TJpropertyIndex").toString();
 
 	if (action->isChecked())
-		_posList << JMdictPlugin::posMap()[tag].first;
+		list << tag;
 	else
-		_posList.removeOne(JMdictPlugin::posMap()[tag].first);
-	if (!_posList.isEmpty())
-		_posButton->setText(tr("Pos:") + _posList.join(","));
+		list.removeOne(tag);
+	if (!list.isEmpty())
+		button->setText(tr("Pos:") + list.join(","));
 	else
-		_posButton->setText(tr("Part of speech"));
+		button->setText(tr("Part of speech"));
 	commandUpdate();
+}
+
+void JMdictFilterWidget::onPosTriggered(QAction *action)
+{
+	__onPropertyTriggered(action, _posList, _posButton);
 }
 
 void JMdictFilterWidget::onDialTriggered(QAction *action)
 {
-	QString tag = action->property("TJpropertyIndex").toString();
-
-	if (action->isChecked())
-		_dialList << JMdictPlugin::dialMap()[tag].first;
-	else
-		_dialList.removeOne(JMdictPlugin::dialMap()[tag].first);
-	if (!_dialList.isEmpty())
-		_dialButton->setText(tr("Dial:") + _dialList.join(","));
-	else
-		_dialButton->setText(tr("Dialect"));
-	commandUpdate();
+	__onPropertyTriggered(action, _dialList, _dialButton);
 }
 
 void JMdictFilterWidget::onFieldTriggered(QAction *action)
 {
-	QString tag = action->property("TJpropertyIndex").toString();
-
-	if (action->isChecked())
-		_fieldList << JMdictPlugin::fieldMap()[tag].first;
-	else
-		_fieldList.removeOne(JMdictPlugin::fieldMap()[tag].first);
-	if (!_fieldList.isEmpty())
-		_fieldButton->setText(tr("Field:") + _fieldList.join(","));
-	else
-		_fieldButton->setText(tr("Field"));
-	emit commandUpdate();
+	__onPropertyTriggered(action, _fieldList, _fieldButton);
 }
 
 void JMdictFilterWidget::onMiscTriggered(QAction *action)
 {
-	QString tag = action->property("TJpropertyIndex").toString();
-
-	if (action->isChecked())
-		_miscList << JMdictPlugin::miscMap()[tag].first;
-	else
-		_miscList.removeOne(JMdictPlugin::miscMap()[tag].first);
-	if (!_miscList.isEmpty())
-		_miscButton->setText(tr("Misc:") + _miscList.join(","));
-	else
-		_miscButton->setText(tr("Misc"));
-	emit commandUpdate();
+	__onPropertyTriggered(action, _miscList, _miscButton);
 }
 
 void JMdictFilterWidget::_reset()
