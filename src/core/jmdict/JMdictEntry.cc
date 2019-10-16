@@ -122,7 +122,8 @@ QList<const Sense *> JMdictEntry::getSenses() const
 	QList<const Sense *> res;
 	QSet<QString> filter(JMdictEntrySearcher::miscFilterEntities() - JMdictEntrySearcher::explicitlyRequestedMiscs());
 	foreach (const Sense &sense, getAllSenses()) {
-		if (!(sense.misc() & filter).isEmpty()) res << &sense;
+		if ((sense.misc() & filter).isEmpty())
+			res << &sense;
 	}
 	return res;
 }
