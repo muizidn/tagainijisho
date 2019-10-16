@@ -35,13 +35,13 @@
 
 JMdictPlugin *JMdictPlugin::_instance = 0;
 
-QMap<QString, QPair<QString, quint8>> JMdictPlugin::_posMap;
+QMap<QString, QPair<QString, quint16>> JMdictPlugin::_posMap;
 QVector<QString> JMdictPlugin::_posShift;
-QMap<QString, QPair<QString, quint8>> JMdictPlugin::_miscMap;
+QMap<QString, QPair<QString, quint16>> JMdictPlugin::_miscMap;
 QVector<QString> JMdictPlugin::_miscShift;
-QMap<QString, QPair<QString, quint8>> JMdictPlugin::_dialMap;
+QMap<QString, QPair<QString, quint16>> JMdictPlugin::_dialMap;
 QVector<QString> JMdictPlugin::_dialShift;
-QMap<QString, QPair<QString, quint8>> JMdictPlugin::_fieldMap;
+QMap<QString, QPair<QString, quint16>> JMdictPlugin::_fieldMap;
 QVector<QString> JMdictPlugin::_fieldShift;
 
 JMdictPlugin::JMdictPlugin() : Plugin("JMdict")
@@ -290,7 +290,7 @@ void JMdictPlugin::detachAllDatabases()
 	_attachedDBs.clear();
 }
 
-void JMdictPlugin::queryEntities(SQLite::Query *query, const QString &entity, QMap<QString, QPair<QString, quint8>> *map, QVector<QString> *shift)
+void JMdictPlugin::queryEntities(SQLite::Query *query, const QString &entity, QMap<QString, QPair<QString, quint16>> *map, QVector<QString> *shift)
 {
 	QString queryString = QString("select bitShift, name, description from jmdict.%1Entities order by bitShift").arg(entity);
 	query->exec(queryString);

@@ -37,16 +37,16 @@ private:
 	JMdictEntrySearcher *searcher;
 	JMdictEntryLoader *loader;
 
-	static QMap<QString, QPair<QString, quint8>> _posMap;
+	static QMap<QString, QPair<QString, quint16>> _posMap;
 	static QVector<QString> _posShift;
-	static QMap<QString, QPair<QString, quint8>> _miscMap;
+	static QMap<QString, QPair<QString, quint16>> _miscMap;
 	static QVector<QString> _miscShift;
-	static QMap<QString, QPair<QString, quint8>> _dialMap;
+	static QMap<QString, QPair<QString, quint16>> _dialMap;
 	static QVector<QString> _dialShift;
-	static QMap<QString, QPair<QString, quint8>> _fieldMap;
+	static QMap<QString, QPair<QString, quint16>> _fieldMap;
 	static QVector<QString> _fieldShift;
 
-	static void queryEntities(SQLite::Query *query, const QString &entity, QMap<QString, QPair<QString, quint8>> *map, QVector<QString> *shift);
+	static void queryEntities(SQLite::Query *query, const QString &entity, QMap<QString, QPair<QString, quint16>> *map, QVector<QString> *shift);
 
 	/**
 	 * If the version if the JMdict database has been updated, this
@@ -70,13 +70,13 @@ public:
 	const QMap<QString, QString> &attachedDBs() const { return _attachedDBs; }
 
 	// Maps the short string to long description and bitshift
-	static const QMap<QString, QPair<QString, quint8>> &posMap() { return _posMap; }
+	static const QMap<QString, QPair<QString, quint16>> &posMap() { return _posMap; }
 	static const QVector<QString> &posShift() { return _posShift; }
-	static const QMap<QString, QPair<QString, quint8>> &miscMap() { return _miscMap; }
+	static const QMap<QString, QPair<QString, quint16>> &miscMap() { return _miscMap; }
 	static const QVector<QString> &miscShift() { return _miscShift; }
-	static const QMap<QString, QPair<QString, quint8>> &dialMap() { return _dialMap; }
+	static const QMap<QString, QPair<QString, quint16>> &dialMap() { return _dialMap; }
 	static const QVector<QString> &dialShift() { return _dialShift; }
-	static const QMap<QString, QPair<QString, quint8>> &fieldMap() { return _fieldMap; }
+	static const QMap<QString, QPair<QString, quint16>> &fieldMap() { return _fieldMap; }
 	static const QVector<QString> &fieldShift() { return _fieldShift; }
 
 	static QSet<QString> shiftsToSet(const QVector<QString>& shift, quint64 bits);

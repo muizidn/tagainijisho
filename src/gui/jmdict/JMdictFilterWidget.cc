@@ -260,7 +260,7 @@ void JMdictFilterWidget::setMisc(const QStringList &list)
 	}
 }
 
-QActionGroup *JMdictFilterWidget::addCheckableProperties(const QMap<QString, QPair<QString, quint8> >&map, QMenu *menu)
+QActionGroup *JMdictFilterWidget::addCheckableProperties(const QMap<QString, QPair<QString, quint16> >&map, QMenu *menu)
 {
 	QMap<QString, QString> strMap;
 	QStringList strList;

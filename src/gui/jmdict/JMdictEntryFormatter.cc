@@ -295,7 +295,7 @@ QString JMdictEntryFormatter::formatAltWritings(const ConstEntryPointer &_entry)
 	else return "";
 }
 
-static QString senseProps(const QSet<QString> &entities, const QString &tag, const QMap<QString, QPair<QString, quint8>> &map)
+static QString senseProps(const QSet<QString> &entities, const QString &tag, const QMap<QString, QPair<QString, quint16>> &map)
 {
 	QStringList ret;
 	for (const auto &entity : entities) {
